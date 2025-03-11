@@ -2,12 +2,11 @@ package com.practice.spring.boardservice.controller;
 
 import com.practice.spring.boardservice.config.jwt.TokenProvider;
 import com.practice.spring.boardservice.config.security.CustomUserDetails;
-import com.practice.spring.boardservice.dto.SignInRequestDTO;
-import com.practice.spring.boardservice.dto.SignInResponseDTO;
-import com.practice.spring.boardservice.dto.SignUpRequestDTO;
-import com.practice.spring.boardservice.dto.SignUpResponseDTO;
+import com.practice.spring.boardservice.dto.*;
 import com.practice.spring.boardservice.model.Member;
 import com.practice.spring.boardservice.service.MemberService;
+import com.practice.spring.boardservice.util.CookieUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -67,6 +67,29 @@ public class MemberApiController {
                 .token(accessToken)
                 .userId(member.getUserId())
                 .userName(member.getUserName())
+                .build();
+    }
+
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request,HttpServletResponse response) {
+        CookieUtil.deleteCookie(request,response,"refreshToken");
+    }
+
+
+    // 클라이언트가 GET /user/info 요청을 보내면, request에서 Member 객체를 가져와 사용자 정보를 DTO로 변환 후 반환합니다.
+   //request.getAttribute("member")는 필터나 인터셉터에서 설정된 값일 가능성이 큽니다.
+   //UserInfoResponseDTO를 사용하여 보안과 데이터 전송의 효율성을 높입니다.
+
+    @GetMapping("/user/info")
+    public UserInfoResponseDTO getUserInfo(HttpServletRequest request) {
+        //getAttribute의 반환값이 Object 타입이므로 Member 타입으로 캐스팅
+        Member member=(Member) request.getAttribute("member");
+
+        return UserInfoResponseDTO.builder()
+                .id(member.getId())
+                .userName(member.getUserName())
+                .userId(member.getUserId())
+                .role(member.getRole())
                 .build();
     }
 

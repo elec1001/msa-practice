@@ -26,6 +26,13 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        String requestURI=request.getRequestURI();
+        log.info("requestURI:{}",requestURI);
+        if("/refresh-token".equals(requestURI)){
+            filterChain.doFilter(request,response);
+            return;
+        }
+
         String token = resolveToken(request);
         if (token != null && tokenProvider.validToken(token)==1) {
             //토큰이 유효할 경우 ,인증 정보를 설정
