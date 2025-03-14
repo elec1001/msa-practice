@@ -12,4 +12,8 @@ public interface BoardMapper {
     List<Article> getArticles(Paging page);
     int getArticleCnt();
     Article getArticleById(long id);
+
+    void updateArticle(Article article);
+
+    void deleteBoardById(Long id);
 }

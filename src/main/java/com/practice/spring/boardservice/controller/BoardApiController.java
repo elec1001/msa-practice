@@ -1,5 +1,6 @@
 package com.practice.spring.boardservice.controller;
 
+import com.practice.spring.boardservice.dto.BoardDeleteRequestDTO;
 import com.practice.spring.boardservice.dto.BoardDetailResponseDTO;
 import com.practice.spring.boardservice.dto.BoardListResponseDTO;
 import com.practice.spring.boardservice.model.Article;
@@ -66,5 +67,24 @@ public class BoardApiController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + encoded)
                 .body(resource);
+    }
+
+    @PutMapping
+    public void updateArticle(
+            @RequestParam("title") String title,
+            @RequestParam("content") String content,
+            @RequestParam("hiddenUserId") String userId,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("hiddenId") Long id,
+            @RequestParam("hiddenFileFlag") Boolean fileChanged,
+            @RequestParam("hiddenFilePath") String filePath
+    ){
+        boardService.updateArticle(id,title,content,file,fileChanged,filePath);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteArticle(@PathVariable("id") long id,//키네임을 넣어야 함?
+                              @RequestBody BoardDeleteRequestDTO boardDeleteRequestDTO){
+        boardService.deleteBoardById(id,boardDeleteRequestDTO);
     }
 }

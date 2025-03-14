@@ -1,5 +1,6 @@
 package com.practice.spring.boardservice.service;
 
+import com.practice.spring.boardservice.dto.BoardDeleteRequestDTO;
 import com.practice.spring.boardservice.mapper.BoardMapper;
 import com.practice.spring.boardservice.model.Article;
 import com.practice.spring.boardservice.model.Paging;
@@ -18,7 +19,7 @@ public class BoardService {
     private final BoardMapper boardMapper;
     private final FileService fileService;
 
-    public List<Article> getBoardArticles(int page,int size) {
+    public List<Article> getBoardArticles(int page, int size) {
         int offset = (page - 1) * size;//페이지 1부터 시작 offset 계산
         return boardMapper.getArticles(
                 Paging.builder()
@@ -30,9 +31,9 @@ public class BoardService {
 
     @Transactional
     public void saveAricle(String userId, String title, String content, MultipartFile file) {
-        String path=null;
-        if(!file.isEmpty()){
-            path=fileService.fileUpload(file);
+        String path = null;
+        if (!file.isEmpty()) {
+            path = fileService.fileUpload(file);
         }
 
         boardMapper.saveArticle(
@@ -45,7 +46,7 @@ public class BoardService {
         );
     }
 
-    public int getTotalArticleCnt(){
+    public int getTotalArticleCnt() {
         return boardMapper.getArticleCnt();
     }
 
@@ -57,5 +58,30 @@ public class BoardService {
         return fileService.downloadFile(fileName);
     }
 
+    public void updateArticle(Long id, String title, String content, MultipartFile file, Boolean fileChanged, String filePath) {
+        String path = null;
 
+        if (!file.isEmpty()) {
+            path = fileService.fileUpload(file);
+        }
+        if (fileChanged) {
+            fileService.deleteFile(filePath);
+        } else {
+            path = filePath;
+        }
+        boardMapper.updateArticle(
+                Article.builder()
+                        .id(id)
+                        .title(title)
+                        .content(content)
+                        .filePath(path)
+                        .build()
+        );
+    }
+
+    public void deleteBoardById(Long id, BoardDeleteRequestDTO boardDeleteRequestDTO) {
+        fileService.deleteFile(boardDeleteRequestDTO.getFilePath());
+        boardMapper.deleteBoardById(id);
+    }
 }
+
