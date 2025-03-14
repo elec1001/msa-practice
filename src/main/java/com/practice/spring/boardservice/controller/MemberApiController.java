@@ -62,6 +62,8 @@ public class MemberApiController {
         String accessToken = tokenProvider.generateToken(member, Duration.ofHours(2));
         String refreshToken = tokenProvider.generateToken(member,Duration.ofDays(2));
 
+        CookieUtil.addCookie(response, "refreshToken", refreshToken, 7 * 24 * 60 * 60);
+
         return SignInResponseDTO.builder()
                 .isLoggedIn(true)
                 .token(accessToken)
@@ -83,8 +85,7 @@ public class MemberApiController {
     @GetMapping("/user/info")
     public UserInfoResponseDTO getUserInfo(HttpServletRequest request) {
         //getAttribute의 반환값이 Object 타입이므로 Member 타입으로 캐스팅
-        Member member=(Member) request.getAttribute("member");
-
+        Member member = (Member) request.getAttribute("member");
         return UserInfoResponseDTO.builder()
                 .id(member.getId())
                 .userName(member.getUserName())

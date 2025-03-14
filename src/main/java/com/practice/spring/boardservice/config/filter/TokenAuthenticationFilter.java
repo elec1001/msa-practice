@@ -38,7 +38,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             //토큰이 유효할 경우 ,인증 정보를 설정
             Authentication authentication=tokenProvider.getAuthentcation(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
             Member member=tokenProvider.getTokenDetails(token);
+            request.setAttribute("member", member);
         } else if (token !=null && tokenProvider.validToken(token)==2) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return; // 더 이상 진행하지 않음.

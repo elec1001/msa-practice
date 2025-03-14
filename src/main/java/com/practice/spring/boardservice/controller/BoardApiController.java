@@ -48,7 +48,7 @@ public class BoardApiController {
         boardService.saveAricle(userId,title,content,file);
     }
 
-    @PostMapping("/{id}")
+    @GetMapping("/{id}")
     public BoardDetailResponseDTO getBoardDetail(@PathVariable long id){
         return boardService
                 .getBoardDetail(id)
